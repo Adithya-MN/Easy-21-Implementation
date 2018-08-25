@@ -6,7 +6,10 @@ class Env(object):
     def __init__(state):
         self.state = {}
         self.dealer_score = self.state['dealer_card']
+        self.last_reward = 0
         self.reward = 0
+
+        self.terminal_state = False
 
     def dealer(self, status):
 
@@ -21,6 +24,7 @@ class Env(object):
                 reward('player')
             elif(self.dealer_sum = player_sum):
                 reward('draw')
+                self.last_reward = 0
             else:
                 reward('dealer')
         elif(status == 'hit'):
@@ -71,19 +75,19 @@ class Env(object):
             player_sum = player_sum + card
 
         if (player_sum > 21 or player_sum < 1):
-            return('player_bust')
+            self.dealer('player_bust')
         else:
-            return('hit')
+            self.dealer('hit')
     else:
-        return('stick')
+        self.dealer('stick')
 
     def reward(self, winner):1
+
+        self.terminal_state = True
         if(winner = 'player'):
             self.reward = self.reward + 1
+            self.last_reward = 1
+
         elif(winner = 'dealer'):
             self.reward = self.reward - 1
-
-
-    def player_policy(self, type = 'monte_carlo'):
-
-        pass
+            self.last_reward = -1
