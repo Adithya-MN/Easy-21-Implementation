@@ -1,58 +1,73 @@
-from Easy21 import *
 import numpy as np
 
+from environment import *
 
-def monte_carlo_policy():
+class Policy():
 
-	card= np.random.randint(1,14)
-	if card > 10:
-		 card = 10
+	def __init__(value_function = None, freq = None):
 
-	state= {dealer_card : card,
-			  player_sum : 0,
-			  action : 'hit'}
+		dealer_card_states = np.arange(1,11)
+		num_dealer_states = dealer_card_states.shape[0]
 
-	environment = Env(state)
+		player_sum_states = np.arange(1, 22)
+		num_player_states = player_sum_states.shape[0]
 
-
-	dealer_card_states = np.arange(1,14)
-	num_dealer_states = dealer_card_states.shape[0]
-
-	player_sum_states = np.arange(1, 22)
-	num_player_states = player_sum_states.shape[0]
-
-	actions = ['hit', 'stick']
-	num_actions = len(actions)
-
-	_value_function = np.zeros((dealer_card_states, num_player_states, num_actions))
-
-	_freq = np.zeros((dealer_card_states, num_player_states, num_actions))
-
-	N0 = 100
-
-	visits = []
-
-	while (environment.terminal_state == False):
-
-		dealer_card  = environment.state ['dealer_card']
-		player_sum = environment.state['player_sum']
-		action = environment.state['action']
+		self.actions = ['hit', 'stick']
+		num_actions = len(self.actions)
 
 
-		_epsilon =  N0 / (N0 + _np.sum(freq[dealer_card][player_sum]) )
-
-		if(np.random.rand() < _epsilon):
-			 action = np.random.choice(['hit', 'stick'])
+		if(value_function == None and freq == None):
+			self._value_function = np.zeros((dealer_card_states, num_player_states, num_actions))
+			self._freq = np.zeros((dealer_card_states, num_player_states, num_actions))
 		else:
-			 action = np.argmax(_value_function[dealer_card][player_sum])
-			 environment.state['action'] = actions[action]
+			self._value_function = value_function
+			self._freq = freq
 
-		visits.append([dealer_card, player_sum, action])
+		self.environment = Environment()
 
-		environment.step()
+	def return_params(self):
 
-	reward = environment.last_reward
+		params = {value_function: self._value_function,
+				  counter: self._freq}
 
-	for visit in visits:
-		[ dealer_card, player_sum, action ]= visit
-		_value_function[dealer_card][player_sum][action]  =  __value_function[dealer_card][player_sum][action] + reward/_freq[dealer_card][player_sum][action]
+		return params
+
+
+class Monte_Carlo_Policy(Policy):
+
+	def __init__(self, value_function = None, freq = None):
+
+		Policy.__init__(value_function, freq)
+		self.n0 = 100
+		self.visits = []
+
+
+	def policy(self):
+		while (self.environment.state.terminal == False):
+
+			dealer_card  = environment.state.dealer_card
+			player_sum = environment.state.player_sum
+
+
+			_epsilon =  self.n0 / (self.n0 + _np.sum(freq[dealer_card][player_sum]) )
+
+			if(np.random.rand() < _epsilon):
+				 action = np.random.randint(1,3)
+			else:
+				 action = np.argmax(self._value_function[dealer_card][player_sum])
+
+			self.visits.append([dealer_card, player_sum, action])
+
+			self._freq[dealer_card, player_sum, action] += 1
+
+			self.environment.step(self.actions[action])
+
+		self.update_value_function()
+
+	def update_value_function(self):
+
+		reward = self.environment.last_reward
+
+		for visit in visits:
+			[ dealer_card, player_sum, action ]= visit
+			self._value_function[dealer_card][player_sum][action]  =  _self._value_function[dealer_card][player_sum][action] + reward/self._freq[dealer_card][player_sum][action]
