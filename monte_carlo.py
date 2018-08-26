@@ -2,23 +2,23 @@ import numpy as np
 
 from environment import *
 
-class Policy():
+class Policy(object):
 
-	def __init__(value_function = None, freq = None):
+	def __init__(self, value_function, freq, initialize = True):
 
 		dealer_card_states = np.arange(1,11)
-		num_dealer_states = dealer_card_states.shape[0]
+		num_dealer_states = 10
 
 		player_sum_states = np.arange(1, 22)
-		num_player_states = player_sum_states.shape[0]
+		num_player_states = 21
 
 		self.actions = ['hit', 'stick']
-		num_actions = len(self.actions)
+		num_actions = 2
 
 
-		if(value_function == None and freq == None):
-			self._value_function = np.zeros((dealer_card_states, num_player_states, num_actions))
-			self._freq = np.zeros((dealer_card_states, num_player_states, num_actions))
+		if  initialize == True:
+			self._value_function = np.zeros((num_dealer_states, num_player_states, num_actions))
+			self._freq = np.zeros((num_dealer_states, num_player_states, num_actions))
 		else:
 			self._value_function = value_function
 			self._freq = freq
@@ -35,9 +35,9 @@ class Policy():
 
 class Monte_Carlo_Policy(Policy):
 
-	def __init__(self, value_function = None, freq = None):
+	def __init__(self,initialize, value_function, freq):
 
-		Policy.__init__(value_function, freq)
+		super().__init__(initialize,value_function, freq)
 		self.n0 = 100
 		self.visits = []
 
@@ -45,14 +45,14 @@ class Monte_Carlo_Policy(Policy):
 	def policy(self):
 		while (self.environment.state.terminal == False):
 
-			dealer_card  = environment.state.dealer_card
-			player_sum = environment.state.player_sum
+			dealer_card  = self.environment.state.dealer_card
+			player_sum = self.environment.state.player_sum
 
 
-			_epsilon =  self.n0 / (self.n0 + _np.sum(freq[dealer_card][player_sum]) )
+			_epsilon =  self.n0 / (self.n0 + np.sum(self._freq[dealer_card][player_sum]) )
 
 			if(np.random.rand() < _epsilon):
-				 action = np.random.randint(1,3)
+				 action = np.random.randint(0,2)
 			else:
 				 action = np.argmax(self._value_function[dealer_card][player_sum])
 
@@ -70,4 +70,4 @@ class Monte_Carlo_Policy(Policy):
 
 		for visit in visits:
 			[ dealer_card, player_sum, action ]= visit
-			self._value_function[dealer_card][player_sum][action]  =  _self._value_function[dealer_card][player_sum][action] + reward/self._freq[dealer_card][player_sum][action]
+			_value_function[dealer_card][player_sum][action] = __value_function[dealer_card][player_sum][action] + reward/self._freq[dealer_card][player_sum][action]

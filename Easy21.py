@@ -10,12 +10,15 @@ from plot import *
 
 num_runs = 10000
 
-value = np.zeros((2,11,22))
-counter = np.zeros((2,11,22))
+value = np.zeros((10,21,2))
+counter = np.zeros((10,21,2))
 
 for run in range(num_runs):
 
-    mc = Monte_Carlo_Policy(value, counter)
+    if(run == 0):
+        mc = Monte_Carlo_Policy(value, counter, True)
+    else:
+        mc = Monte_Carlo_Policy(value, counter, False)
     mc.policy()
     params = mc.return_params()
     value, counter = params['value'], params['counter']

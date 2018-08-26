@@ -6,9 +6,10 @@ class State():
 
 	def __init__(self):
 
-		self.dealer_card = self.get_card(force_black = True)
-		self.player_sum = self.get_card(force_black = True)
+		self.dealer_card = Environment.get_card(force_black = True)
+		self.player_sum = Environment.get_card(force_black = True)
 		self.terminal = False
+
 
 
 class Environment(object):
@@ -17,7 +18,7 @@ class Environment(object):
 
 
 		self.state = State()
-
+		self.dealer_sum = self.state.dealer_card
 		self.last_reward = 0
 		self.reward = 0
 
@@ -25,27 +26,26 @@ class Environment(object):
 
 	def dealer(self, player_action):
 
-		self.state.player_sum
 
 		if(player_action == 'stick'):
-			while(self.state.dealer_sum > 0 and self.state.dealer_sum < 17):
-				self.state.dealer_sum += self.get_card()
-			if(self.state.dealer_sum < 0 or self.state.dealer_sum > 21 or self.state.player_sum > self.state.dealer_sum):
-				reward('won')
-			elif(self.state.dealer_sum == self.state.player_sum):
-				reward('draw')
+			while(self.dealer_sum > 0 and self.dealer_sum < 17):
+				self.dealer_sum += Environment.get_card()
+			if(self.dealer_sum < 0 or self.dealer_sum > 21 or self.state.player_sum > self.dealer_sum):
+				self.reward('won')
+			elif(self.dealer_sum == self.state.player_sum):
+				self.reward('draw')
 				self.last_reward = 0
 			else:
-				reward('lost')
+				self.reward('lost')
 		elif(player_action == 'hit'):
 			if(self.status.dealer_score > 16):
-				self.state.dealer_sum += self.get_card()
+				self.dealer_sum += Environment.get_card()
 			if(self.dealer_sum < 0 or self.dealer_sum > 21):
-				reward('won')
+				self.reward('won')
 
 
-
-	def get_card(self,force_black = False):
+	@classmethod
+	def get_card(cls,force_black = False):
 
 		colour = 'black' if np.random.rand() > (1.0/3) or force_black else 'red'
 
@@ -64,7 +64,7 @@ class Environment(object):
 
 		if action == 'hit':
 
-			self.state.player_sum += self.get_card()
+			self.state.player_sum += Environment.get_card()
 
 			if (self.state.player_sum > 21 or self.state.player_sum < 1):
 				self.reward('loss')
