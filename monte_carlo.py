@@ -27,8 +27,8 @@ class Policy(object):
 
 	def return_params(self):
 
-		params = {value_function: self._value_function,
-				  counter: self._freq}
+		params = {'value_function': self._value_function,
+				  'counter': self._freq}
 
 		return params
 
@@ -49,16 +49,16 @@ class Monte_Carlo_Policy(Policy):
 			player_sum = self.environment.state.player_sum
 
 
-			_epsilon =  self.n0 / (self.n0 + np.sum(self._freq[dealer_card][player_sum]) )
+			_epsilon =  self.n0 / (self.n0 + np.sum(self._freq[dealer_card-1][player_sum-1]) )
 
 			if(np.random.rand() < _epsilon):
 				 action = np.random.randint(0,2)
 			else:
-				 action = np.argmax(self._value_function[dealer_card][player_sum])
+				 action = np.argmax(self._value_function[dealer_card-1][player_sum-1])
 
-			self.visits.append([dealer_card, player_sum, action])
+			self.visits.append([dealer_card - 1, player_sum - 1, action])
 
-			self._freq[dealer_card, player_sum, action] += 1
+			self._freq[dealer_card - 1, player_sum - 1, action] += 1
 
 			self.environment.step(self.actions[action])
 
@@ -68,6 +68,6 @@ class Monte_Carlo_Policy(Policy):
 
 		reward = self.environment.last_reward
 
-		for visit in visits:
+		for visit in self.visits:
 			[ dealer_card, player_sum, action ]= visit
-			_value_function[dealer_card][player_sum][action] = __value_function[dealer_card][player_sum][action] + reward/self._freq[dealer_card][player_sum][action]
+			self._value_function[dealer_card][player_sum][action] = self._value_function[dealer_card][player_sum][action] + reward/self._freq[dealer_card][player_sum][action]

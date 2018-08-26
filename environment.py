@@ -31,17 +31,17 @@ class Environment(object):
 			while(self.dealer_sum > 0 and self.dealer_sum < 17):
 				self.dealer_sum += Environment.get_card()
 			if(self.dealer_sum < 0 or self.dealer_sum > 21 or self.state.player_sum > self.dealer_sum):
-				self.reward('won')
+				self._reward('won')
 			elif(self.dealer_sum == self.state.player_sum):
-				self.reward('draw')
+				self._reward('draw')
 				self.last_reward = 0
 			else:
-				self.reward('lost')
+				self._reward('lost')
 		elif(player_action == 'hit'):
-			if(self.status.dealer_score > 16):
+			if(self.dealer_sum > 16):
 				self.dealer_sum += Environment.get_card()
 			if(self.dealer_sum < 0 or self.dealer_sum > 21):
-				self.reward('won')
+				self._reward('won')
 
 
 	@classmethod
@@ -67,14 +67,14 @@ class Environment(object):
 			self.state.player_sum += Environment.get_card()
 
 			if (self.state.player_sum > 21 or self.state.player_sum < 1):
-				self.reward('loss')
+				self._reward('loss')
 			else:
 				self.dealer(action)
 		elif(action == 'stick'):
 			self.dealer(action)
 
 
-	def reward(self, player_result):
+	def _reward(self, player_result):
 
 		self.state.terminal = True
 		if(player_result == 'won'):
